@@ -233,8 +233,8 @@ export class App extends React.Component {
           </Grid>
         )}
         <Grid container spacing={2} padding={5}>
-          <Grid item xs={3}></Grid>
-          <Grid item xs={3}>
+          <Grid item xs={12} md={3}></Grid>
+          <Grid item xs={12} md={3}>
             <Button
               variant="contained"
               fullWidth={true}
@@ -244,7 +244,7 @@ export class App extends React.Component {
               {connected ? 'Disconnect' : 'Connect'}
             </Button>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={12} md={3}>
             <Button
               disabled={availableToken <= 0}
               variant="contained"
@@ -255,7 +255,7 @@ export class App extends React.Component {
               Withdraw my Token
             </Button>
           </Grid>
-          <Grid item xs={3}></Grid>
+          <Grid item xs={12} md={3}></Grid>
         </Grid>
         {connected ? (
           <TableContainer component={Paper}>
