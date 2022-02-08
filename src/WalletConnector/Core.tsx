@@ -1,0 +1,16 @@
+export interface ITransaction {
+  from: string;
+  to: string;
+  data?: string;
+  value?: string | number;
+  gas?: string | number;
+  gasLimit?: string | number;
+}
+
+export interface IWallet {
+  connect: (chainId: number) => Promise<string>;
+  getAddress: () => Promise<string>;
+  sendTransaction: (transaction: ITransaction) => Promise<string>;
+  switchNetwork: (chainId: number) => Promise<boolean>;
+  isConnected: () => Promise<boolean>;
+}
