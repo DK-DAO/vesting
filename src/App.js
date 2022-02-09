@@ -3,6 +3,7 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Container,
   Grid,
@@ -24,6 +25,8 @@ import {
   Paper,
   TableRow,
   CircularProgress,
+  Typography,
+  Box,
 } from '@mui/material';
 import { BigNumber, ethers } from 'ethers';
 import abiErc20 from './abi/ERC20.json';
@@ -34,6 +37,26 @@ import TokenReleased from './MainPage/TokenReleased';
 import { formatNumber, getProvider } from './utilities/singleton';
 import vestingData from './json/vesting-creator.json';
 import TokenVested from './MainPage/TokenVested';
+import Lora from '../src/fonts/Lora-Regular.ttf';
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Lora',
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: `
+        @font-face {
+          font-family: 'Lora';
+          font-style: normal;
+          font-display: swap;
+          font-weight: 400;
+          src: local('Lora'), local('Lora-Regular'), url(${Lora}) format('woff2');
+          unicodeRange: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF;
+        }
+      `,
+    },
+  },
+});
 
 const oneUint = '1000000000000000000';
 const oneDay = 86400;
@@ -221,42 +244,66 @@ export class App extends React.Component {
       );
     }
 
+    const theme = createTheme({
+      palette: {
+        neutral: {
+          main: '#FFBC5A',
+          contrastText: '#110C12',
+        },
+      },
+    });
+
     return (
-      <Container>
-        {connected ? (
-          <TokenVested withdrew={withdrewToken} available={availableToken} remain={remain} total={totalToken} />
-        ) : (
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TokenReleased locked={locked} transferable={transferable} />
+      <>
+        <Container>
+          <Typography fontSize="2.5rem" color="#5D3802">Vesting Schedule of Investors</Typography>
+          <Grid container alignItems="center" mt="1rem" mb="1.5rem" sx={{padding: "1.5rem", backgroundColor: "#D0BC9C50", border: "2px solid #94763B"}}>
+            <Grid item xs={8}>
+              {connected ? (
+                <TokenVested withdrew={withdrewToken} available={availableToken} remain={remain} total={totalToken} />
+              ) : (
+                  <Grid item xs={12}>
+                    <TokenReleased locked={locked} transferable={transferable} />
+                  </Grid>
+              )}
             </Grid>
-          </Grid>
-        )}
-        <Grid container spacing={2} padding={5}>
-          <Grid item xs={12} md={3}></Grid>
-          <Grid item xs={12} md={3}>
-            <Button
-              variant="contained"
-              fullWidth={true}
-              onClick={this.buttonConnectHandler.bind(this)}
-              color={connected ? 'error' : 'success'}
-            >
-              {connected ? 'Disconnect' : 'Connect'}
-            </Button>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Button
-              disabled={availableToken <= 0}
-              variant="contained"
-              fullWidth={true}
-              onClick={this.buttonWithdrawMyToken.bind(this)}
-              color={'primary'}
-            >
-              Withdraw my Token
-            </Button>
-          </Grid>
-          <Grid item xs={12} md={3}></Grid>
+            <Grid item xs={4}>
+              <Grid container spacing={2}>
+                <Grid item md={6}>
+                <ThemeProvider theme={theme}>
+                    <Button
+                      variant="contained"
+                      fullWidth={true}
+                      onClick={this.buttonConnectHandler.bind(this)}
+                      color={connected ? 'error' : 'neutral'}
+                    >
+                      <Box sx={{fontFamily: "Lora", fontWeight: "bold", textTransform:"none"}}>{connected ? 'Disconnect' : 'Connect Wallet'}</Box>
+                    </Button>
+                </ThemeProvider>
+                </Grid>
+                <Grid item md={6}>
+                <ThemeProvider theme={theme}>
+                  <Button
+                    disabled={availableToken <= 0}
+                    variant="contained"
+                    fullWidth={true}
+                    onClick={this.buttonWithdrawMyToken.bind(this)}
+                    color={'primary'}
+                  >
+                    <Box sx={{fontFamily: "Lora", fontWeight: "bold", textTransform:"none"}}>Withdraw</Box>
+                  </Button>
+                </ThemeProvider>
+                </Grid>
+              </Grid>
+            </Grid>
         </Grid>
+        <Typography fontSize="1.5rem" mb="0.5rem">
+        <ThemeProvider theme={theme}>
+        <Box sx={{fontFamily: "Lora", fontWeight: "bold"}}>
+          History
+        </Box>
+        </ThemeProvider>
+        </Typography>
         {connected ? (
           <TableContainer component={Paper}>
             {loading ? (
@@ -266,7 +313,7 @@ export class App extends React.Component {
                 </Grid>
               </Grid>
             ) : (
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <Table>
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ fontWeight: 'bold' }}>Term</TableCell>
@@ -277,7 +324,10 @@ export class App extends React.Component {
                   {displayData.map((row) => (
                     <TableRow
                       key={row.label.replace(/\s/g, '-')}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                      sx={{ 
+                        '&:last-child td, &:last-child th':{ 
+                          border: 0 
+                      } }}
                     >
                       <TableCell component="th" scope="row" sx={{ fontFamily: 'monospace' }}>
                         {row.label}
@@ -301,6 +351,7 @@ export class App extends React.Component {
           <TableVesting />
         )}
       </Container>
+      </>
     );
   }
 }
