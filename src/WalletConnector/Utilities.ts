@@ -1,4 +1,4 @@
-export const toChainIdString = (chainId: number): string => `0x${chainId.toString(16)}`;
+export const toChainIdString = (chainId: number): string => `0x${Number(chainId).toString(16)}`;
 
 export const toChainIdNumber = (chainId: string): number => parseInt(chainId.replace(/^0x/i, '').trim(), 16);
 

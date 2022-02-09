@@ -1,4 +1,4 @@
-import { useState, useReducer } from 'react';
+import { useState, useReducer, useEffect } from 'react';
 import { Buffer as safeBuffer } from 'safe-buffer';
 import Button from '@mui/material/Button';
 import { WalletConnectorDialog } from './DialogSelectWallet';
@@ -6,6 +6,9 @@ import ModalMessage from './ModalMessage';
 import { DefaultWalletConnectorContext, WalletConnectorContext, WalletConnectorReducer } from './Context';
 import { CoreMetaMask } from './CoreMetaMask';
 import CoreWalletConnect from './CoreWalletConnect';
+import { IWallet } from './Core';
+
+declare let localStorage: any;
 
 // @ts-ignore
 if (typeof globalThis.Buffer === 'undefined') globalThis.Buffer = safeBuffer;
@@ -25,8 +28,7 @@ export interface IWalletConnectorState {
 }
 
 export interface IWalletConnectorProps {
-  onConnected: (data: any) => void;
-  chainId: number;
+  onConnect: (error: Error | null, walletInstance: IWallet) => void;
 }
 
 export const SupportedNetwork = new Map<number, string>([
@@ -37,10 +39,32 @@ export const SupportedNetwork = new Map<number, string>([
   [4002, 'Fantom Testnet'],
 ]);
 
-// eslint-disable-next-line no-unused-vars
-export function WalletConnector(_props: any) {
+export function WalletConnector(props: IWalletConnectorProps) {
   const [context, dispatch] = useReducer(WalletConnectorReducer, DefaultWalletConnectorContext);
   const [modalState, setModalState] = useState({ title: 'Unknown Error', message: 'Unknown error', type: 'info' });
+  const [isConnected, setConnection] = useState(false);
+
+  useEffect(() => {
+    if (typeof localStorage !== 'undefined') {
+      const type = localStorage.getItem('wallet-connector-type') || '';
+      const chainId = localStorage.getItem('wallet-connector-chain-id') || 1;
+      if (type === 'metamask') {
+        const wallet = CoreMetaMask.getInstance();
+        if (wallet.isConnected()) {
+          wallet.connect(chainId).then(() => {
+            setConnection(true);
+          });
+          props.onConnect(null, wallet);
+        }
+      } else if (type === 'walletconnect') {
+        const wallet = CoreWalletConnect.getInstance();
+        if (wallet.isConnected()) {
+          setConnection(true);
+          props.onConnect(null, wallet);
+        }
+      }
+    }
+  });
 
   const overrideDispatch = (type: string, value: any) => dispatch({ type, value });
 
@@ -55,9 +79,13 @@ export function WalletConnector(_props: any) {
         const wallet = CoreMetaMask.getInstance();
         wallet
           .connect(56)
-          .then((address: string) =>
-            overrideDispatch('metamask-connected', { connected: true, type: connectType, address }),
-          )
+          .then((address: string) => {
+            if (typeof localStorage !== 'undefined') {
+              localStorage.setItem('wallet-connector-type', connectType);
+              localStorage.setItem('wallet-connector-chain-id', 56);
+            }
+            overrideDispatch('metamask-connected', { connected: true, type: connectType, address });
+          })
           .catch((err: Error) => showModal('error', err.message, err.stack || 'Unknown reason'))
           .finally(() => overrideDispatch('close-dialog', { dialogOpen: false }));
       } else {
@@ -67,9 +95,13 @@ export function WalletConnector(_props: any) {
       const wallet = CoreWalletConnect.getInstance();
       wallet
         .connect(56)
-        .then((address: string) =>
-          overrideDispatch('walletconnect-connected', { connected: true, type: connectType, address }),
-        )
+        .then((address: string) => {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('wallet-connector-type', connectType);
+            localStorage.setItem('wallet-connector-chain-id', 56);
+          }
+          overrideDispatch('walletconnect-connected', { connected: true, type: connectType, address });
+        })
         .catch((err: Error) => showModal('error', err.message, err.stack || 'Unknown reason'))
         .finally(() => overrideDispatch('close-dialog', { dialogOpen: false }));
     } else {
@@ -78,13 +110,14 @@ export function WalletConnector(_props: any) {
   };
 
   const handleButtonConnect = () => {
-    overrideDispatch('close-dialog', { dialogOpen: true });
+    overrideDispatch('open-dialog', { dialogOpen: true });
   };
+
   return (
     <>
-      <WalletConnectorContext.Provider value={{ ...context, dispatch }}>
-        <Button variant="contained" onClick={handleButtonConnect}>
-          Connect
+      <WalletConnectorContext.Provider value={{ ...context, dispatch: overrideDispatch }}>
+        <Button variant="contained" onClick={handleButtonConnect} disabled={isConnected}>
+          {!isConnected ? 'Connect' : 'Disconnect'}
         </Button>
         <WalletConnectorDialog onClose={handleDialogClose} />
         <ModalMessage type={modalState.type} title={modalState.title}>

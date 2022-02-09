@@ -12,6 +12,7 @@ type TRpcMethod =
 declare let ethereum: {
   request: (rpcRequest: { method: TRpcMethod; params?: any[] }) => Promise<any>;
   chainId: string;
+  selectedAddress: string | null;
 };
 
 const singleton = new Map<string, any>();
@@ -21,14 +22,18 @@ export class CoreMetaMask implements IWallet {
 
   private address: string = '';
 
-  static getInstance(instanceName: string = 'metamask'): CoreMetaMask {
+  public getChainId(): number {
+    return this.chainId;
+  }
+
+  public static getInstance(instanceName: string = 'metamask'): CoreMetaMask {
     if (!singleton.has(instanceName)) {
       singleton.set(instanceName, new CoreMetaMask());
     }
     return singleton.get(instanceName) as CoreMetaMask;
   }
 
-  async connect(chainId: number) {
+  public async connect(chainId: number) {
     const [walletAddress] = await ethereum.request({ method: 'eth_requestAccounts' });
     this.address = walletAddress;
     this.chainId = chainId;
@@ -39,7 +44,7 @@ export class CoreMetaMask implements IWallet {
     return walletAddress;
   }
 
-  async getAddress(): Promise<string> {
+  public async getAddress(): Promise<string> {
     if (!ethers.utils.isAddress(this.address)) {
       // Try to reconnect to correct the issue
       this.address = await this.connect(this.chainId);
@@ -47,7 +52,7 @@ export class CoreMetaMask implements IWallet {
     return this.address;
   }
 
-  async switchNetwork(chainId: number): Promise<boolean> {
+  public async switchNetwork(chainId: number): Promise<boolean> {
     try {
       await ethereum.request({
         method: 'wallet_switchEthereumChain',
@@ -62,12 +67,12 @@ export class CoreMetaMask implements IWallet {
     return true;
   }
 
-  async sendTransaction(transaction: ITransaction): Promise<string> {
+  public async sendTransaction(transaction: ITransaction): Promise<string> {
     return ethereum.request({ method: 'eth_sendTransaction', params: [transaction] });
   }
 
-  async isConnected(): Promise<boolean> {
-    return ethers.utils.isAddress(await this.connect(this.chainId));
+  public isConnected(): boolean {
+    return ethers.utils.isAddress(ethereum.selectedAddress || '');
   }
 }
 

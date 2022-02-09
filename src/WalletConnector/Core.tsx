@@ -9,8 +9,9 @@ export interface ITransaction {
 
 export interface IWallet {
   connect: (chainId: number) => Promise<string>;
+  getChainId(): number;
   getAddress: () => Promise<string>;
   sendTransaction: (transaction: ITransaction) => Promise<string>;
   switchNetwork: (chainId: number) => Promise<boolean>;
-  isConnected: () => Promise<boolean>;
+  isConnected: () => boolean;
 }

@@ -19,9 +19,20 @@ export class CoreWalletConnect implements IWallet {
 
   private reject: (reason: any) => void = () => undefined;
 
+  public getChainId(): number {
+    if (this.chainId === 0) {
+      this.chainId = this.walletConnectInstance.chainId;
+    }
+    return this.chainId;
+  }
+
   constructor() {
     this.reloadWalletConnect();
     this.connected = this.walletConnectInstance.connected;
+    if (this.connected) {
+      [this.address] = this.walletConnectInstance.accounts;
+      this.chainId = this.walletConnectInstance.chainId;
+    }
   }
 
   private reloadWalletConnect() {
@@ -46,14 +57,14 @@ export class CoreWalletConnect implements IWallet {
     });
   }
 
-  static getInstance(instanceName: string = 'wallet-connect'): CoreWalletConnect {
+  public static getInstance(instanceName: string = 'wallet-connect'): CoreWalletConnect {
     if (!singleton.has(instanceName)) {
       singleton.set(instanceName, new CoreWalletConnect());
     }
     return singleton.get(instanceName) as CoreWalletConnect;
   }
 
-  connect(chainId: number): Promise<string> {
+  public connect(chainId: number): Promise<string> {
     // Set target chain Id
     this.chainId = chainId;
     // If connected we have nothing to do here
@@ -71,7 +82,7 @@ export class CoreWalletConnect implements IWallet {
     });
   }
 
-  async getAddress(): Promise<string> {
+  public async getAddress(): Promise<string> {
     if (!ethers.utils.isAddress(this.address)) {
       [this.address] = this.walletConnectInstance.accounts;
     }
@@ -79,16 +90,16 @@ export class CoreWalletConnect implements IWallet {
   }
 
   // eslint-disable-next-line no-unused-vars
-  async switchNetwork(_chainId: number): Promise<boolean> {
+  public async switchNetwork(_chainId: number): Promise<boolean> {
     // Wallet might not support network switch yet, might be we need another approach
     return true;
   }
 
-  async sendTransaction(transaction: ITransaction): Promise<string> {
+  public async sendTransaction(transaction: ITransaction): Promise<string> {
     return this.walletConnectInstance.sendTransaction(transaction);
   }
 
-  async isConnected(): Promise<boolean> {
+  public isConnected(): boolean {
     return this.connected;
   }
 }
