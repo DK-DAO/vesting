@@ -31,6 +31,5 @@ export const DefaultWalletConnectorContext = {
 export const WalletConnectorContext = React.createContext<IWalletConnectorContext>(DefaultWalletConnectorContext);
 
 export const WalletConnectorReducer = (state: IWalletConnectorContext, action: IAction) => {
-  console.log(action.type, action.value);
   return { ...state, ...action.value };
 };
