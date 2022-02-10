@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { ethers } from 'ethers';
-import { ITransaction, IWallet } from './Core';
-import { networkData, toChainIdString } from './Utilities';
+import { ITransaction, IWallet } from './core';
+import { networkData, toChainIdString } from './utilities';
 
 type TRpcMethod =
   | 'eth_requestAccounts'
@@ -26,6 +26,10 @@ export class CoreMetaMask implements IWallet {
     return this.chainId;
   }
 
+  public isWallet(): boolean {
+    return true;
+  }
+
   public static getInstance(instanceName: string = 'metamask'): CoreMetaMask {
     if (!singleton.has(instanceName)) {
       singleton.set(instanceName, new CoreMetaMask());
@@ -34,6 +38,7 @@ export class CoreMetaMask implements IWallet {
   }
 
   public async connect(chainId: number) {
+    if (chainId === 0) throw new Error('Invalid chainId');
     const [walletAddress] = await ethereum.request({ method: 'eth_requestAccounts' });
     this.address = walletAddress;
     this.chainId = chainId;
@@ -45,9 +50,9 @@ export class CoreMetaMask implements IWallet {
   }
 
   public async getAddress(): Promise<string> {
-    if (!ethers.utils.isAddress(this.address)) {
+    if (ethereum.selectedAddress !== null && !ethers.utils.isAddress(this.address)) {
       // Try to reconnect to correct the issue
-      this.address = await this.connect(this.chainId);
+      this.address = ethereum.selectedAddress;
     }
     return this.address;
   }

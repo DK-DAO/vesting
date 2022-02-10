@@ -2,7 +2,7 @@
 import WalletConnect from '@walletconnect/client';
 import QRCodeModal from '@walletconnect/qrcode-modal';
 import { ethers } from 'ethers';
-import { ITransaction, IWallet } from './Core';
+import { ITransaction, IWallet } from './core';
 
 const singleton = new Map<string, any>();
 
@@ -18,6 +18,10 @@ export class CoreWalletConnect implements IWallet {
   private resolve: (value: any) => void = () => undefined;
 
   private reject: (reason: any) => void = () => undefined;
+
+  public isWallet(): boolean {
+    return true;
+  }
 
   public getChainId(): number {
     if (this.chainId === 0) {

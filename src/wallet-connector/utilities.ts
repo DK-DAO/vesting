@@ -21,4 +21,4 @@ export const once = (name: string, callback: () => void) => {
   }
 };
 
-export const toKey = (v: string): string => v.toLowerCase().replace(/\s/g, '-');
+export const toKey = (v: string): string => v.toLowerCase().replace(/\s/g, '');

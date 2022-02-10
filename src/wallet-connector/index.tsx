@@ -1,12 +1,13 @@
 import { useState, useReducer, useEffect } from 'react';
 import { Buffer as safeBuffer } from 'safe-buffer';
 import Button from '@mui/material/Button';
-import { WalletConnectorDialog } from './DialogSelectWallet';
-import ModalMessage from './ModalMessage';
-import { DefaultWalletConnectorContext, WalletConnectorContext, WalletConnectorReducer } from './Context';
-import { CoreMetaMask } from './CoreMetaMask';
-import CoreWalletConnect from './CoreWalletConnect';
-import { IWallet } from './Core';
+import { WalletConnectorDialog } from './dialog-select-wallet';
+import ModalMessage from './modal-message';
+import { DefaultWalletConnectorContext, WalletConnectorContext, WalletConnectorReducer } from './context';
+import { CoreMetaMask } from './core-meta-mask';
+import CoreWalletConnect from './core-wallet-connect';
+import { IWallet } from './core';
+import { once } from '../utilities/singleton';
 
 declare let localStorage: any;
 
@@ -14,6 +15,8 @@ declare let localStorage: any;
 if (typeof globalThis.Buffer === 'undefined') globalThis.Buffer = safeBuffer;
 
 declare let window: any;
+
+export const VoidWallet = { isWallet: () => false } as IWallet;
 
 export interface IWalletConnectorState {
   connected: boolean;
@@ -44,27 +47,29 @@ export function WalletConnector(props: IWalletConnectorProps) {
   const [modalState, setModalState] = useState({ title: 'Unknown Error', message: 'Unknown error', type: 'info' });
   const [isConnected, setConnection] = useState(false);
 
-  useEffect(() => {
-    if (typeof localStorage !== 'undefined') {
-      const type = localStorage.getItem('wallet-connector-type') || '';
-      const chainId = localStorage.getItem('wallet-connector-chain-id') || 1;
-      if (type === 'metamask') {
-        const wallet = CoreMetaMask.getInstance();
-        if (wallet.isConnected()) {
-          wallet.connect(chainId).then(() => {
+  useEffect(() =>
+    once('restore-previous-session', () => {
+      if (typeof localStorage !== 'undefined') {
+        const type = localStorage.getItem('wallet-connector-type') || '';
+        const chainId = Number(localStorage.getItem('wallet-connector-chain-id') || 56);
+        if (type === 'metamask') {
+          const wallet = CoreMetaMask.getInstance();
+          if (wallet.isConnected()) {
+            wallet.connect(chainId).then(() => {
+              setConnection(true);
+            });
+            props.onConnect(null, wallet);
+          }
+        } else if (type === 'walletconnect') {
+          const wallet = CoreWalletConnect.getInstance();
+          if (wallet.isConnected()) {
             setConnection(true);
-          });
-          props.onConnect(null, wallet);
-        }
-      } else if (type === 'walletconnect') {
-        const wallet = CoreWalletConnect.getInstance();
-        if (wallet.isConnected()) {
-          setConnection(true);
-          props.onConnect(null, wallet);
+            props.onConnect(null, wallet);
+          }
         }
       }
-    }
-  });
+    }),
+  );
 
   const overrideDispatch = (type: string, value: any) => dispatch({ type, value });
 
@@ -85,6 +90,8 @@ export function WalletConnector(props: IWalletConnectorProps) {
               localStorage.setItem('wallet-connector-chain-id', 56);
             }
             overrideDispatch('metamask-connected', { connected: true, type: connectType, address });
+            props.onConnect(null, wallet);
+            setConnection(true);
           })
           .catch((err: Error) => showModal('error', err.message, err.stack || 'Unknown reason'))
           .finally(() => overrideDispatch('close-dialog', { dialogOpen: false }));
@@ -101,6 +108,8 @@ export function WalletConnector(props: IWalletConnectorProps) {
             localStorage.setItem('wallet-connector-chain-id', 56);
           }
           overrideDispatch('walletconnect-connected', { connected: true, type: connectType, address });
+          props.onConnect(null, wallet);
+          setConnection(true);
         })
         .catch((err: Error) => showModal('error', err.message, err.stack || 'Unknown reason'))
         .finally(() => overrideDispatch('close-dialog', { dialogOpen: false }));

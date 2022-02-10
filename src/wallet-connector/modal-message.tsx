@@ -9,7 +9,7 @@ import CheckCircle from '@mui/icons-material/CheckCircle';
 import Info from '@mui/icons-material/Info';
 import Error from '@mui/icons-material/Error';
 import Warning from '@mui/icons-material/Warning';
-import { WalletConnectorContext } from './Context';
+import { WalletConnectorContext } from './context';
 
 const style = {
   position: 'absolute' as 'absolute',

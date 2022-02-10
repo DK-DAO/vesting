@@ -8,6 +8,7 @@ export interface ITransaction {
 }
 
 export interface IWallet {
+  isWallet(): boolean;
   connect: (chainId: number) => Promise<string>;
   getChainId(): number;
   getAddress: () => Promise<string>;
