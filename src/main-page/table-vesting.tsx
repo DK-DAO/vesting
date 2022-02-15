@@ -28,17 +28,17 @@ export default function TableVesting() {
         <TableBody>
           {rows.map((row) => (
             <TableRow key={row.contract} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TableCell component="th" scope="row" sx={{ fontFamily: 'monospace' }}>
+              <TableCell component="th" scope="row">
                 <Link href={`https://bscscan.com/address/${row.contract}`} target="_blank">
                   {row.contract}
                 </Link>
               </TableCell>
-              <TableCell component="th" scope="row" sx={{ fontFamily: 'monospace' }}>
+              <TableCell component="th" scope="row">
                 <Link href={`https://bscscan.com/address/${row.beneficiary}`} target="_blank">
                   {row.beneficiary}
                 </Link>
               </TableCell>
-              <TableCell align="right" sx={{ fontFamily: 'monospace' }}>
+              <TableCell align="right">
                 {row.amount} DKT
               </TableCell>
             </TableRow>

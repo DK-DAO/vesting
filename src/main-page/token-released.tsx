@@ -4,29 +4,29 @@ import { formatNumber } from '../utilities/singleton';
 export default function TokenReleased(props: { locked: number | string; transferable: number | string }) {
   const { locked, transferable } = props;
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} md={4}>
-        <Typography variant="h3" align="center" sx={{ color: 'red' }}>
-          {formatNumber(locked)} DKT
-        </Typography>
-        <Typography align="center" sx={{ color: 'red' }}>
+    <Grid container spacing={6}>
+      <Grid item sm={4}>
+        <Typography sx={{ color: '#110C12', fontSize: "0.875rem" }}>
           Locked
         </Typography>
-      </Grid>
-      <Grid item xs={12} md={4}>
-        <Typography variant="h3" align="center" sx={{ color: 'green' }}>
-          {formatNumber(transferable)} DKT
+        <Typography variant="h3" sx={{ color: '#110C12', fontSize: "1.5rem", fontWeight: "bold" }}>
+          {formatNumber(locked)} DKT
         </Typography>
-        <Typography align="center" sx={{ color: 'green' }}>
+      </Grid>
+      <Grid item sm={4}>
+        <Typography sx={{ color: '#110C12', fontSize: "0.875rem" }}>
           Transferable
         </Typography>
-      </Grid>
-      <Grid item xs={12} md={4}>
-        <Typography variant="h3" align="center" sx={{ color: 'blue' }}>
-          10,000,000 DKT
+        <Typography variant="h3" sx={{ color: '#110C12', fontSize: "1.5rem", fontWeight: "bold" }}>
+          {formatNumber(transferable)} DKT
         </Typography>
-        <Typography align="center" sx={{ color: 'blue' }}>
+      </Grid>
+      <Grid item sm={4}>
+        <Typography sx={{ color: '#110C12', fontSize: "0.875rem" }}>
           Maximum
+        </Typography>
+        <Typography variant="h3" sx={{ color: '#110C12', fontSize: "1.5rem", fontWeight: "bold" }}>
+          10,000,000 DKT
         </Typography>
       </Grid>
     </Grid>
