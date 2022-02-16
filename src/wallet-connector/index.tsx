@@ -1,6 +1,7 @@
 import { useState, useReducer, useEffect } from 'react';
 import { Buffer as safeBuffer } from 'safe-buffer';
 import Button from '@mui/material/Button';
+import { Typography, Box } from '@mui/material';
 import { WalletConnectorDialog } from './dialog-select-wallet';
 import ModalMessage from './modal-message';
 import { DefaultWalletConnectorContext, WalletConnectorContext, WalletConnectorReducer } from './context';
@@ -8,6 +9,7 @@ import { CoreMetaMask } from './core-meta-mask';
 import CoreWalletConnect from './core-wallet-connect';
 import { IWallet } from './core';
 import { once } from '../utilities/singleton';
+
 
 declare let localStorage: any;
 
@@ -125,9 +127,17 @@ export function WalletConnector(props: IWalletConnectorProps) {
   return (
     <>
       <WalletConnectorContext.Provider value={{ ...context, dispatch: overrideDispatch }}>
-        <Button variant="contained" onClick={handleButtonConnect} disabled={isConnected}>
-          {!isConnected ? 'Connect' : 'Disconnect'}
-        </Button>
+        <Box sx={{ display: "flex",justifyContent: 'space-between' }} alignItems="center">
+          <Typography fontSize="2.5rem" color="#5D3802">Vesting Schedule of Investors</Typography>
+          <Button
+            variant="contained"
+            onClick={handleButtonConnect}
+            disabled={isConnected}
+            color={'info'}
+          >
+            {!isConnected ? 'Connect wallet' : 'Disconnect wallet'}
+          </Button>
+        </Box>
         <WalletConnectorDialog onClose={handleDialogClose} />
         <ModalMessage type={modalState.type} title={modalState.title}>
           {modalState.message}

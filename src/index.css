@@ -1,13 +1,76 @@
-body {
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  background: url('./images/brand-bg.jpg') center center repeat;
+  background-size: inherit;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  margin: 0 auto;
+}
+
+.css-11oz3v-MuiTypography-root, .css-12c9vpt-MuiTypography-root,.MuiTableRow-head .MuiTableCell-root {
+  font-family: 'Lora', serif !important;
+  font-weight: 700 !important;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.MuiButton-root {
+  font-family: 'Lora', serif !important;
+  text-transform: none !important;
+  font-weight: 400 !important;
+}
+
+.css-ahj2mt-MuiTypography-root {
+  font-family: 'Lora', serif !important;
+  font-weight: 700 !important;
+  padding-bottom: 1rem;
+  font-size: 1.5rem !important;
+}
+
+.MuiTableRow-head .MuiTableCell-root {
+  color: #5D3802;
+}
+
+.css-11xur9t-MuiPaper-root-MuiTableContainer-root {
+  background-color: transparent !important;
+  box-shadow: none;
+}
+
+.css-11xur9t-MuiPaper-root-MuiTableContainer-root a {
+  color: #5D3802;
+  text-decoration-color: #5D3802;
+}
+
+.css-177gid-MuiTableCell-root,
+.css-1ex1afd-MuiTableCell-root,
+.css-11sptls-MuiTableCell-root,
+.css-1o98s2t-MuiTableCell-root {
+  border: none !important;
+}
+
+.MuiTableRow-root {
+  position: relative;
+  width: 100%;
+  background-color: #94763B10;
+}
+.MuiTableRow-root::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 6px;
+  background: url('./images/border-table.png') center center repeat-x;
+  top: 0;
+  left: 0;
+}
+
+.MuiTableHead-root .MuiTableRow-root,
+.MuiTableHead-root .MuiTableRow-root::before {
+  background: none;
+}
+.css-11xur9t-MuiPaper-root-MuiTableContainer-root {
+  box-shadow: none !important;
 }
