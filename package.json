@@ -40,7 +40,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "fix": "eslint --config .eslintrc.json --fix --ignore-path .eslintignore ./src/**/*.ts",
-    "release": "yarn build && rm -rf docs && mv build docs"
+    "release": "yarn build && rm -rf docs && mv build docs && echo 'vesting.duelistking.com' > ./docs/CNAME"
   },
   "eslintConfig": {
     "extends": [
