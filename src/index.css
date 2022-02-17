@@ -35,12 +35,13 @@ body {
   color: #5D3802;
 }
 
-.css-11xur9t-MuiPaper-root-MuiTableContainer-root {
+.css-11xur9t-MuiPaper-root-MuiTableContainer-root,
+.MuiPaper-root {
   background-color: transparent !important;
-  box-shadow: none;
+  box-shadow: none !important;
 }
 
-.css-11xur9t-MuiPaper-root-MuiTableContainer-root a {
+a.MuiTypography-root {
   color: #5D3802;
   text-decoration-color: #5D3802;
 }
@@ -48,7 +49,8 @@ body {
 .css-177gid-MuiTableCell-root,
 .css-1ex1afd-MuiTableCell-root,
 .css-11sptls-MuiTableCell-root,
-.css-1o98s2t-MuiTableCell-root {
+.css-1o98s2t-MuiTableCell-root,
+.MuiTableCell-root {
   border: none !important;
 }
 
