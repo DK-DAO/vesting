@@ -9,7 +9,8 @@ import TableHead from '@mui/material/TableHead';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import TableRow from '@mui/material/TableRow';
-import { Container, Grid, Typography } from '@mui/material';
+import { Button, Container, Grid, Typography } from '@mui/material';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import { BigNumber, ethers } from 'ethers';
 import TableVesting from './main-page/table-vesting';
 import TokenReleased from './main-page/token-released';
@@ -43,6 +44,8 @@ export default class App extends React.Component {
       startVesting: 0,
       totalBlocks: 0,
       unlockAmountPerBlock: BigNumber.from(0),
+      controlledContract: 0,
+      maxControlledContract: 0,
       loading: false,
     };
   }
@@ -58,9 +61,11 @@ export default class App extends React.Component {
     });
   }
 
-  firstLoadOfData(address: string) {
-    const [vestingRecord] = vestingData.filter((e) => e.beneficiary.toLowerCase() === address.toLowerCase());
-    if (typeof vestingRecord !== 'undefined') {
+  reloadData(address: string, controlledContract: number = 0) {
+    const vestingRecords = vestingData.filter((e) => e.beneficiary.toLowerCase() === address.toLowerCase());
+    if (vestingRecords.length > 0) {
+      this.setState({ controlledContract, maxControlledContract: vestingRecords.length });
+      const vestingRecord = vestingRecords[controlledContract];
       const vestingContract = getVestingContract(vestingRecord.contract);
       vestingContract.getVestingSchedule().then((v) => {
         this.setState({
@@ -82,7 +87,7 @@ export default class App extends React.Component {
   onConnect = (err: Error | null, wallet: IWallet) => {
     if (err === null) {
       this.setState({ wallet });
-      wallet.getAddress().then((v) => this.firstLoadOfData(v));
+      wallet.getAddress().then((v) => this.reloadData(v));
     } else {
       this.setState({ wallet: null });
     }
@@ -101,6 +106,15 @@ export default class App extends React.Component {
     });
   }
 
+  onClickSwitchWallet() {
+    const { controlledContract, maxControlledContract, address } = this.state as any;
+    let inc = controlledContract + 1;
+    if (inc >= maxControlledContract) {
+      inc = 0;
+    }
+    this.reloadData(address, inc);
+  }
+
   render() {
     const currentTime = Math.floor(Date.now() / 1000);
 
@@ -116,6 +130,7 @@ export default class App extends React.Component {
       startVesting,
       unlockAmountPerBlock,
       totalBlocks,
+      maxControlledContract,
     } = this.state as any;
     const vestedDay = Math.floor((currentTime - startVesting) / oneDay);
     const blockSize = releaseType === RELEASE_MONTHLY ? oneMonth : oneDay;
@@ -181,6 +196,14 @@ export default class App extends React.Component {
                     </TableRow>
                   </TableHead>
                   <TableBody>
+                    <TableRow>
+                      <TableCell>Switch vesting contract</TableCell>
+                      <TableCell>
+                        <Button disabled={maxControlledContract <= 1} onClick={this.onClickSwitchWallet.bind(this)}>
+                          <CurrencyExchangeIcon />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
                     {displayData.map((row) => (
                       <TableRow
                         key={row.label.replace(/\s/g, '-')}
