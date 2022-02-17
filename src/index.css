@@ -41,6 +41,11 @@ body {
   box-shadow: none !important;
 }
 
+.MuiDialog-paper {
+  background-color: rgb(255, 255, 255) !important;
+  box-shadow: rgb(0 0 0 / 20%) 0px 11px 15px -7px, rgb(0 0 0 / 14%) 0px 24px 38px 3px, rgb(0 0 0 / 12%) 0px 9px 46px 8px !important;
+}
+
 a.MuiTypography-root {
   color: #5D3802;
   text-decoration-color: #5D3802;
