@@ -11,12 +11,11 @@ import Paper from '@mui/material/Paper';
 import TableRow from '@mui/material/TableRow';
 import { Button, Container, Grid, Typography } from '@mui/material';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import { IWallet, WalletConnector } from '@orochi-network/wallet-connector';
 import { BigNumber, ethers } from 'ethers';
 import TableVesting from './main-page/table-vesting';
 import TokenReleased from './main-page/token-released';
 import { formatNumber, getToken, getVestingContract } from './utilities/singleton';
-import { WalletConnector } from './wallet-connector';
-import { IWallet } from './wallet-connector/core';
 import vestingData from './json/vesting-creator.json';
 import './App.css';
 import TokenVested from './main-page/token-vested';
@@ -115,6 +114,13 @@ export default class App extends React.Component {
     this.reloadData(address, inc);
   }
 
+  onDisconnect() {
+    this.setState({
+      wallet: null,
+      address: '',
+    });
+  }
+
   render() {
     const currentTime = Math.floor(Date.now() / 1000);
 
@@ -164,7 +170,7 @@ export default class App extends React.Component {
     return (
       <>
         <Container>
-          <WalletConnector onConnect={this.onConnect.bind(this)} />
+          <WalletConnector onConnect={this.onConnect.bind(this)} onDisconnect={this.onDisconnect.bind(this)} />
           {wallet === null ? (
             <>
               <Grid
