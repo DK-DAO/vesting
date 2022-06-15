@@ -61,12 +61,15 @@ export default class App extends React.Component {
   }
 
   reloadData(address: string, controlledContract: number = 0) {
+    console.log('wallet address', address);
     const vestingRecords = vestingData.filter((e) => e.beneficiary.toLowerCase() === address.toLowerCase());
     if (vestingRecords.length > 0) {
       this.setState({ controlledContract, maxControlledContract: vestingRecords.length });
       const vestingRecord = vestingRecords[controlledContract];
+      console.log('vesting record', vestingRecord);
       const vestingContract = getVestingContract(vestingRecord.contract);
       vestingContract.getVestingSchedule().then((v) => {
+        console.log('getVestingSchedule', v);
         this.setState({
           vestingContract,
           vestingContractAddress: vestingRecord.contract,
@@ -80,6 +83,8 @@ export default class App extends React.Component {
           loading: false,
         });
       });
+    } else {
+      console.log('No vesting record');
     }
   }
 
@@ -87,6 +92,7 @@ export default class App extends React.Component {
     if (err === null) {
       this.setState({ wallet });
       wallet.getAddress().then((v) => this.reloadData(v));
+      console.log('chainId', wallet.getChainId());
     } else {
       this.setState({ wallet: null });
     }
